@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Calculator {
@@ -13,27 +14,52 @@ public class Calculator {
         return a % b;
     }
 
+    private static void printMenu() {
+        System.out.println("=== Calculadora ===");
+        System.out.println("Escolha a operação digitando o símbolo (+, -, *, /, %) ou 'sair' para encerrar:");
+    }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.println("=== Calculadora ===");
-            System.out.println("Escolha a operação: (+, -, *, /, %), ou 'sair' para encerrar");
+            printMenu();
             String op = scanner.next();
             if (op.equalsIgnoreCase("sair")) {
                 System.out.println("Encerrando a calculadora.");
                 break;
             }
-            System.out.print("Primeiro número: ");
-            double a = scanner.nextDouble();
-            System.out.print("Segundo número: ");
-            double b = scanner.nextDouble();
+            double a, b;
+            try {
+                System.out.print("Primeiro número: ");
+                a = scanner.nextDouble();
+                System.out.print("Segundo número: ");
+                b = scanner.nextDouble();
+            } catch (InputMismatchException e) {
+                System.out.println("Entrada inválida. Por favor, insira números válidos.");
+                scanner.nextLine(); // limpa o buffer
+                continue;
+            }
             double result;
             switch (op) {
                 case "+": result = add(a, b); break;
                 case "-": result = subtract(a, b); break;
                 case "*": result = multiply(a, b); break;
-                case "/": result = divide(a, b); break;
-                case "%": result = modulus(a, b); break;
+                case "/":
+                    try {
+                        result = divide(a, b);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
+                        continue;
+                    }
+                    break;
+                case "%":
+                    try {
+                        result = modulus(a, b);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
+                        continue;
+                    }
+                    break;
                 default:
                     System.out.println("Operação desconhecida.");
                     continue;
